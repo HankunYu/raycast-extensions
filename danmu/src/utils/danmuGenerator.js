@@ -420,7 +420,7 @@ function tryExtractSub(filePath) {
 }
 
 // 手动匹配弹幕池
-async function manualMatch(episodeID, filePath) {
+export const manualMatch = async (episodeID, filePath) => {
   const hash = await calculateMd5OfFirst16MB(filePath);
 
   const url = `https://api.dandanplay.net/api/v2/match/${episodeID}`;
@@ -448,7 +448,7 @@ async function manualMatch(episodeID, filePath) {
 }
 
 // 主函数：生成弹幕
-async function danmuGenerator(filePath, width = 1920, height = 1080, fontface = 'Arial', fontsize = 50, alpha = 0.8, duration = 10) {
+export const danmuGenerator = async (filePath, width = 1920, height = 1080, fontface = 'Arial', fontsize = 50, alpha = 0.8, duration = 10) => {
     const commentID = await getCommentID(filePath);
 
     if (commentID[0] === false) return [false,commentID[1],commentID[2]];
@@ -467,5 +467,3 @@ async function danmuGenerator(filePath, width = 1920, height = 1080, fontface = 
     }
     return [true,[]];
 }
-
-export { danmuGenerator , manualMatch};
