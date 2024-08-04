@@ -468,10 +468,4 @@ async function danmuGenerator(filePath, width = 1920, height = 1080, fontface = 
     return [true,[]];
 }
 
-// 示例路径
-// const pathToVideo = '/Volumes/Garage/Anime/不时用俄语小声说真心话的邻桌艾莉同学 (2024)/Season 1/不时用俄语小声说真心话的邻桌艾莉同学 - S01E04.mkv';
-// danmuGenerator(pathToVideo);
-
-// console.log(manualMatch(179140004,pathToVideo));
-// 导出函数
 export { danmuGenerator , manualMatch};
