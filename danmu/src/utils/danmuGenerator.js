@@ -155,7 +155,7 @@ async function getCommentID(filePath) {
 
 // 获取评论
 async function getComments(commentID) {
-    const url = `https://api.dandanplay.net/api/v2/comment/${commentID}`;
+    const url = `https://api.dandanplay.net/api/v2/comment/${commentID}?withRelated=true`;
     try {
         const response = await axios.get(url, {
             headers: {
