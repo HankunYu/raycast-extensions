@@ -33,7 +33,7 @@ export default function Command() {
     try {
       const data = await danmuGenerator(newItems[index].path);
       if (data[0] === true) {
-        newItems[index].status = "弹幕生成完成！";
+        newItems[index].status = "弹幕生成完成！一共生成弹幕" + data[1] + "条";
         newItems[index].completed = true;
       } else {
         newItems[index].status = "手动选择弹幕池";

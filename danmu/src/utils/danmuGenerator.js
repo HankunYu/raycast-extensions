@@ -300,6 +300,8 @@ async function generateDanmuAss(commentID, filePath, width = 1920, height = 1080
     console.log(comments.length);
     const output = path.join(path.dirname(filePath), `${path.basename(filePath, path.extname(filePath))}.danmu.ass`);
     await convertCommentsToAss(comments, output, width, height, fontface, fontsize, alpha, duration);
+    // 返回弹幕数量
+    return comments.length
 }
 
 // 合并字幕
@@ -451,9 +453,10 @@ export const manualMatch = async (episodeID, filePath) => {
 export const danmuGenerator = async (filePath, width = 1920, height = 1080, fontface = 'Arial', fontsize = 50, alpha = 0.8, duration = 10) => {
     const commentID = await getCommentID(filePath);
 
+    // 如果没匹配到，返回可能的匹配的标题以及ID
     if (commentID[0] === false) return [false,commentID[1],commentID[2]];
-
-    await generateDanmuAss(commentID[1], filePath, width, height, fontface, fontsize, alpha, duration);
+    // 如果匹配到，获取返回的ID，生成弹幕
+    var commentsCounts = await generateDanmuAss(commentID[1], filePath, width, height, fontface, fontsize, alpha, duration);
     
     const sub2 = findSubtitleFile(filePath);
     if (sub2 === null) {
@@ -465,5 +468,5 @@ export const danmuGenerator = async (filePath, width = 1920, height = 1080, font
     }else{
         await combineSubAss(`${path.dirname(filePath)}/${path.basename(filePath, path.extname(filePath))}.danmu.ass`, sub2);
     }
-    return [true,[]];
+    return [true, commentsCounts];
 }
