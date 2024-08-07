@@ -155,6 +155,7 @@ async function getCommentID(filePath) {
 
 // 获取评论
 async function getComments(commentID) {
+    console.log(`获取弹幕 - ${commentID}`);
     const url = `https://api.dandanplay.net/api/v2/comment/${commentID}?withRelated=true`;
     try {
         const response = await axios.get(url, {
@@ -421,6 +422,24 @@ function tryExtractSub(filePath) {
     }
 }
 
+// 手动指定弹幕池生成弹幕
+export const danmuGeneratorWithID = async (episodeID, filePath, width = 1920, height = 1080, fontface = 'Arial', fontsize = 50, alpha = 0.8, duration = 10) => {
+    var commentsCounts = await generateDanmuAss(episodeID, filePath, width, height, fontface, fontsize, alpha, duration);
+    console.log(episodeID);
+    const sub2 = findSubtitleFile(filePath);
+    if (sub2 === null) {
+        tryExtractSub(filePath);
+        const newSub2 = findSubtitleFile(filePath);
+        if (newSub2 !== null) {
+            await combineSubAss(`${path.dirname(filePath)}/${path.basename(filePath, path.extname(filePath))}.danmu.ass`, newSub2);
+        }
+    }else{
+        await combineSubAss(`${path.dirname(filePath)}/${path.basename(filePath, path.extname
+            (filePath))}.danmu.ass`, sub2);
+    }
+    return [true, commentsCounts];
+}
+
 // 手动匹配弹幕池
 export const manualMatch = async (episodeID, filePath) => {
   const hash = await calculateMd5OfFirst16MB(filePath);
@@ -469,4 +488,56 @@ export const danmuGenerator = async (filePath, width = 1920, height = 1080, font
         await combineSubAss(`${path.dirname(filePath)}/${path.basename(filePath, path.extname(filePath))}.danmu.ass`, sub2);
     }
     return [true, commentsCounts];
+}
+
+export const manualSearch = async (filePath) => {
+    const url = 'https://api.dandanplay.net/api/v2/match';
+    const hash = "0a63e53c2379a710fa239facb9437191"
+    const name = path.basename(filePath);
+    let info;
+
+    try {
+        const size = getFileSize(filePath);
+        const duration = Math.floor(getVideoDuration(filePath));
+        info = {
+            fileName: name,
+            fileHash: hash,
+            fileSize: size,
+            videoDuration: duration,
+            matchMode: 'hashAndFileName'
+        };
+    } catch (error) {
+        console.error('获取文件信息失败');
+        info = {
+            fileName: name,
+            fileHash: hash,
+            fileSize: 0,
+            videoDuration: 0,
+            matchMode: 'hashAndFileName'
+        };
+    }
+
+    try {
+        const response = await axios.post(url, info, {
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+        if (response.status === 200) {
+            const title = getTitleFromNfo(filePath);
+            var titles = [];
+            var ids = [];
+            for (const match of response.data.matches) {
+                const episodeTitle = match.episodeTitle.replace(/第\d+话 /, '');
+                console.log(`${episodeTitle} - ${match.episodeId}`);
+                titles.push(episodeTitle);
+                ids.push(match.episodeId);
+                }
+            
+            return [true,[titles,ids],title];
+        }
+    } catch (error) {
+        console.error(`获取弹幕ID失败: ${error.message}`);
+        return [false,error.message];
+    }
 }
