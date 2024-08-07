@@ -2,6 +2,7 @@ import { ActionPanel, List, Action, showToast, Toast, useNavigation, popToRoot }
 import { getSelectedFinderItems } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { danmuGenerator, manualMatch } from "./utils/danmuGenerator";
+import path from "path";
 
 export default function Command() {
   const [items, setItems] = useState<{ path: string; status: string; completed: boolean; needManualMatch: boolean; nfoTitle: string; ids: string[]; titles: string[] }[]>([]);
@@ -13,8 +14,16 @@ export default function Command() {
       try {
         const selectedItems = await getSelectedFinderItems();
         const validItems = selectedItems
-          .map(item => ({ path: item.path, status: "", completed: false, needManualMatch: false, nfoTitle: "", ids: [], titles: [] })) // 添加 completed 字段
-          .filter(item => item.path.endsWith('.mp4') || item.path.endsWith('.mkv'));
+          .map(item => ({
+            path: item.path, // 只保留文件名
+            status: "",
+            completed: false,
+            needManualMatch: false,
+            nfoTitle: "",
+            ids: [],
+            titles: []
+          }))
+          .filter(item => item.path.endsWith('.mp4') || item.path.endsWith('.mkv'));  
         setItems(validItems);
       } catch (error) {
         setErrorMessage("没有获取到选择的文件"); // 设置错误消息
@@ -116,7 +125,7 @@ export default function Command() {
         <List.Item
           key={index}
           icon={item.completed ? "done.png" : "dot.png"} // 根据完成状态更改图标
-          title={item.path}
+          title={path.basename(item.path)} // 显示文件名
           subtitle={item.status}
           actions={
             <ActionPanel>
