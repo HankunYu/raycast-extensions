@@ -319,7 +319,7 @@ async function combineSubAss(sub1, sub2) {
         const sub2ResX = sub2Content.match(/PlayResX:\s*(\d+)/);
         let fontSizeRatio = 1;
         if (sub1ResX && sub2ResX) {
-            fontSizeRatio = parseInt(sub1ResX[1]) / parseInt(sub2ResX[1]) * 0.8;
+            fontSizeRatio = parseInt(sub1ResX[1]) / parseInt(sub2ResX[1]);
             console.log(`${sub1ResX[1]} and ${sub2ResX[1]}`);
         }
 
