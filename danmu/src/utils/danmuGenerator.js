@@ -135,12 +135,13 @@ async function getCommentID(filePath) {
                 console.log('尝试从标题匹配');
                 for (const match of response.data.matches) {
                     const episodeTitle = match.episodeTitle.replace(/第\d+话 /, '');
+                    const animeTitle = match.animeTitle;
                     console.log(`${episodeTitle} - ${match.episodeId}`);
                     if (episodeTitle === title) {
                         console.log('匹配成功 - ' + filePath);
                         return [true,match.episodeId];
                     }
-                    titles.push(episodeTitle);
+                    titles.push(animeTitle + ': ' + episodeTitle);
                     ids.push(match.episodeId);
                 }
                 console.log('未找到匹配，跳过 - ' + filePath);
