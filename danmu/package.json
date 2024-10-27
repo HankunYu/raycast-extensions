@@ -13,7 +13,7 @@
   "commands": [
     {
       "name": "index",
-      "title": "Generate danmu",
+      "title": "Generate Danmu",
       "description": "generate danmu for selected files",
       "mode": "view"
     }

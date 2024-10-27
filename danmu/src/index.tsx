@@ -5,7 +5,17 @@ import { danmuGenerator, manualMatch, danmuGeneratorWithID, manualSearch } from 
 import path from "path";
 
 export default function Command() {
-  const [items, setItems] = useState<{ path: string; status: string; completed: boolean; needManualMatch: boolean; nfoTitle: string; ids: string[]; titles: string[] }[]>([]);
+  const [items, setItems] = useState<
+    {
+      path: string;
+      status: string;
+      completed: boolean;
+      needManualMatch: boolean;
+      nfoTitle: string;
+      ids: string[];
+      titles: string[];
+    }[]
+  >([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 新增错误消息状态
   const { push } = useNavigation(); // 使用导航功能
   const { pop } = useNavigation();
@@ -14,16 +24,16 @@ export default function Command() {
       try {
         const selectedItems = await getSelectedFinderItems();
         const validItems = selectedItems
-          .map(item => ({
+          .map((item) => ({
             path: item.path, // 只保留文件名
             status: "",
             completed: false,
             needManualMatch: false,
             nfoTitle: "",
             ids: [],
-            titles: []
+            titles: [],
           }))
-          .filter(item => item.path.endsWith('.mp4') || item.path.endsWith('.mkv'));  
+          .filter((item) => item.path.endsWith(".mp4") || item.path.endsWith(".mkv"));
         setItems(validItems);
       } catch (error) {
         setErrorMessage("没有获取到选择的文件"); // 设置错误消息
@@ -42,16 +52,18 @@ export default function Command() {
     try {
       const data = await danmuGenerator(newItems[index].path);
       if (data[0] === true) {
-        newItems[index].status = "弹幕生成完成！一共生成弹幕" + data[1] + "条";
+        newItems[index].status = "弹幕生成完成！一共生成弹幕" + data[3] + "条";
         newItems[index].completed = true;
       } else {
         newItems[index].status = "手动选择弹幕池";
         newItems[index].needManualMatch = true;
-        newItems[index].nfoTitle = data[2];
+        newItems[index].nfoTitle = data[3];
 
         // 确保 ids 和 titles 是数组
-        newItems[index].ids = Array.isArray(data[1][1]) ? data[1][1] : []; // 确保是数组
-        newItems[index].titles = Array.isArray(data[1][0]) ? data[1][0] : []; // 确保是数组
+        console.log(data[2]);
+        console.log(data[1]);
+        newItems[index].titles = Array.isArray(data[1]) ? data[1] : []; // 确保是数组
+        newItems[index].ids = Array.isArray(data[2]) ? data[2] : []; // 确保是数组
       }
     } catch (error) {
       newItems[index].status = "弹幕生成失败";
@@ -62,19 +74,22 @@ export default function Command() {
   };
 
   const handleGenerateDanmuWithIDInput = async (index: number) => {
-    push (
+    push(
       <Form
         actions={
           <ActionPanel>
-            <Action.SubmitForm title="根据ID进行匹配" onSubmit={(values) => handleGenerateDanmuWithID(index, values["ID"])} />
+            <Action.SubmitForm
+              title="根据ID进行匹配"
+              onSubmit={(values) => handleGenerateDanmuWithID(index, values["ID"])}
+            />
           </ActionPanel>
         }
       >
-      <Form.TextArea id="ID" defaultValue="" />
-      </Form>
+        <Form.TextArea id="ID" defaultValue="" />
+      </Form>,
     );
-  }
-  
+  };
+
   const handleGenerateDanmuWithID = async (index: number, episodeID: string) => {
     pop();
     const newItems = [...items];
@@ -95,8 +110,7 @@ export default function Command() {
     }
 
     setItems([...newItems]); // 确保创建新的数组引用
-  }
-    
+  };
 
   const handleManualMatch = (index: number) => {
     const item = items[index];
@@ -106,7 +120,6 @@ export default function Command() {
       showToast(Toast.Style.Failure, "没有可用的 ID 和标题");
       return;
     }
-
     // 创建一个新的页面来显示 nfoTitle 和 ID、标题的选择列表
     push(
       <List>
@@ -137,7 +150,7 @@ export default function Command() {
             }
           />
         ))}
-      </List>
+      </List>,
     );
   };
 
@@ -179,7 +192,7 @@ export default function Command() {
                   title={`选择 ${item.titles[i]}`}
                   onAction={async () => {
                     showToast(Toast.Style.Success, `已选择 ${item.titles[i]}`);
-                    handleGenerateDanmuWithID(index,id); // 重新生成弹幕
+                    handleGenerateDanmuWithID(index, id); // 重新生成弹幕
                     pop(); // 返回到主页面
                   }}
                 />
@@ -187,9 +200,9 @@ export default function Command() {
             }
           />
         ))}
-      </List>
+      </List>,
     );
-  }
+  };
 
   const clearErrorMessage = () => {
     setErrorMessage(null); // 清除错误消息
@@ -220,9 +233,7 @@ export default function Command() {
                 <Action title="查看详情" onAction={() => handleManualMatch(index)} />
               ) : (
                 <>
-                  {item.completed ? null : (
-                    <Action title="生成弹幕" onAction={() => handleGenerateDanmu(index)} />
-                  )}
+                  {item.completed ? null : <Action title="生成弹幕" onAction={() => handleGenerateDanmu(index)} />}
                   <Action title="手动搜索弹幕ID" onAction={() => handleManualSearch(index)} />
                   <Action title="手动指定弹幕ID" onAction={() => handleGenerateDanmuWithIDInput(index)} />
                 </>

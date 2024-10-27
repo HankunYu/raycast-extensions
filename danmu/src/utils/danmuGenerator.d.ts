@@ -5,8 +5,8 @@ export function danmuGenerator(
   fontface?: string,
   fontsize?: number,
   alpha?: number,
-  duration?: number
-): Promise<any>;
+  duration?: number,
+): PromisePromise<[boolean, [string], [string], string]>;
 
 export function danmuGeneratorWithID(
   episodeID: string,
@@ -16,8 +16,8 @@ export function danmuGeneratorWithID(
   fontface?: string,
   fontsize?: number,
   alpha?: number,
-  duration?: number
-): Promise<any>;
+  duration?: number,
+): Promise<[boolean, string]>;
 
-export function manualMatch(episodeID: string, filePath: string): Promise<any>;
-export function manualSearch(filePath: string): Promise<any>;
+export function manualMatch(episodeID: string, filePath: string): Promise<[boolean, string]>;
+export function manualSearch(filePath: string): Promise<[boolean, [string, string], string]>;
