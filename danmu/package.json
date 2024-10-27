@@ -5,7 +5,6 @@
   "description": "Scraping danmu from dandan play",
   "icon": "danmuIcon.png",
   "author": "Hankun",
-  "owner": "berich",
   "categories": [
     "Media"
   ],
@@ -14,7 +13,7 @@
     {
       "name": "index",
       "title": "Generate Danmu",
-      "description": "generate danmu for selected files",
+      "description": "generate danmu for selected file or files",
       "mode": "view"
     }
   ],

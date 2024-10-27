@@ -131,7 +131,7 @@ async function getCommentID(filePath) {
       },
     });
     if (response.status === 200 && response.data.isMatched) {
-      return [true, response.data.matches[0].episodeId];
+      return [true, [], response.data.matches[0].episodeId];
     } else {
       console.error(`未找到匹配 - ${filePath}`);
       const title = getTitleFromNfo(filePath);
@@ -540,6 +540,7 @@ export const danmuGenerator = async (
   // 如果没匹配到，返回可能的匹配的标题以及ID
   if (commentID[0] === false) return [false, commentID[1][0], commentID[1][1], commentID[2]];
   // 如果匹配到，获取返回的ID，生成弹幕
+  console.log("Get ID: " + commentID[2]);
   var commentsCounts = await generateDanmuAss(
     commentID[2],
     filePath,
